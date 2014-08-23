@@ -1,0 +1,63 @@
+---
+player:
+    texture: enemies
+    width: 32
+    height: 32
+    anims:
+        idle:
+            - r: 2
+              c: 0
+              dur: 10
+            - r: 2
+              c: 1
+              dur: 10
+goomba:
+    texture: enemies
+    width: 32
+    height: 32
+    anims:
+        idle:
+            - r: 0
+              c: 0
+              dur: 10
+            - r: 0
+              c: 1
+              dur: 10
+ball:
+    texture: enemies
+    width: 32
+    height: 32
+    anims:
+        ball:
+            - r: 3
+              c: 3
+              dur: 10
+tile:
+    texture: tiles
+    width: 32
+    height: 32
+    anims:
+        background:
+            - r: 1
+              c: 0
+              dur: 10
+        bricks:
+            - r: 0
+              c: 0
+              dur: 10
+        firepot:
+            - r: 0
+              c: 3
+              dur: 5
+            - r: 0
+              c: 4
+              dur: 5
+redx:
+    texture: enemies
+    width: 8
+    height: 8
+    anims:
+        redx:
+            - r: 7
+              c: 7
+              dur: 10
