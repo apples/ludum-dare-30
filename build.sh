@@ -17,6 +17,11 @@ usage() {
 TARGET=$1
 PLATFORM=$2
 
+SFML_DIR="../SFML"
+SFML_LIB="$SFML_DIR/build/lib/"
+SFML_EXTLIB="$SFML_DIR/extlibs/libs-mingw/x64/"
+SFML_INC="$SFML_DIR/include/"
+
 DEFAULT_TARGET="release"
 DEFAULT_PLATFORM=""
 
@@ -45,7 +50,7 @@ fi
 
 S_CXXFLAGS="-std=c++1y -Wall -DGLM_FORCE_RADIANS -DGLEW_STATIC -DGLFW_INCLUDE_GLCOREARB"
 S_LDFLAGS=""
-S_LDLIBS="-lyaml-cpp -lpng -lz"
+S_LDLIBS="-lyaml-cpp -lpng -lz -lsfml-audio-s -lsfml-system-s -lsndfile -lopenal32"
 
 ####################################################
 ### Target Flags - Flags specific to each target ###
@@ -84,13 +89,14 @@ P_LDLIBS=""
 
 case $PLATFORM in
     win32)
-        P_CXXFLAGS="-m32"
-        P_LDFLAGS="-m32 -static"
-        P_LDLIBS="-lglfw3 -lglew32 -lopengl32 -lgdi32"
+        P_CXXFLAGS="-m32 -DSFML_STATIC -I$SFML_INC"
+        P_LDFLAGS="-m32 -static -L$SFML_LIB -L$SFML_EXTLIB"
+        P_LDLIBS="-lglfw3 -lglew32 -lopengl32 -lgdi32 -lwinmm"
         ;;
     win64)
-        P_LDFLAGS="-static"
-        P_LDLIBS="-lglfw3 -lglew32 -lopengl32 -lgdi32"
+        P_CXXFLAGS="-DSFML_STATIC -I$SFML_INC"
+        P_LDFLAGS="-static -L$SFML_LIB -L$SFML_EXTLIB"
+        P_LDLIBS="-lglfw3 -lglew32 -lopengl32 -lgdi32 -lwinmm"
         ;;
     darwin)
         P_CXXFLAGS="-stdlib=libc++ -I/opt/local/include"
@@ -112,6 +118,8 @@ export CXX="g++"
 export CXXFLAGS="$CXXFLAGS $S_CXXFLAGS $T_CXXFLAGS $P_CXXFLAGS"
 export LDFLAGS="$LDFLAGS $S_LDFLAGS $T_LDFLAGS $P_LDFLAGS"
 export LDLIBS="$LDLIBS $S_LDLIBS $T_LDLIBS $P_LDLIBS"
+
+echo $CXX $CXXFLAGS $LDFLAGS $LDLIBS
 
 ############################################################
 ### Respite Cache - Used to create multiple build caches ###

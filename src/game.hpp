@@ -13,6 +13,8 @@
 #include "smoothcamera.hpp"
 #include "types.hpp"
 
+#include "SFML/Audio.hpp"
+
 #include <memory>
 #include <random>
 #include <utility>
@@ -53,12 +55,18 @@ public:
 		ECDatabase* active_world;
 		EntID player;
 
+	// Music
+
+		sf::Music main_music;
+		sf::Music digital_music;
+
     // Initialization
 
         Game(RenderParams params);
 
         void loadTextures();
         void loadSprites();
+        void loadMusic();
 
     // Tick Functions
 

@@ -30,7 +30,7 @@ using namespace Component;
     // Configuration
 
         addCallback([&]{ tick(); draw(); }, 60.0);
-        setWindowTitle("Ludum Dare 30", true);
+        setWindowTitle("Bitshift - Ludum Dare 30", true);
 
         min_view.width = (params.width/pixel_scale);
         min_view.height = (params.height/pixel_scale);
@@ -41,6 +41,7 @@ using namespace Component;
 
         loadTextures();
         loadSprites();
+        loadMusic();
 
     // Entities
 
@@ -157,6 +158,7 @@ using namespace Component;
                 auto& pos = db.makeComponent(ent, Position{}).data();
                 pos.y = l.r*tileWidth+tileWidth/2;
                 pos.x = l.c*tileWidth+tileWidth/2;
+                pos.z = -0.5;
 
                 auto& sprite = db.makeComponent(ent, Sprite{}).data();
                 sprite.name = tileset_name;
@@ -174,6 +176,7 @@ using namespace Component;
                 auto& pos = db.makeComponent(ent, Position{}).data();
                 pos.y = sw.r*tileWidth+tileWidth/2;
                 pos.x = sw.c*tileWidth+tileWidth/2;
+                pos.z = -0.5;
 
                 auto& sprite = db.makeComponent(ent, Sprite{}).data();
                 sprite.name = tileset_name;
@@ -253,4 +256,18 @@ using namespace Component;
 
             sprites.create(name, move(data));
         }
+    }
+
+    void Game::loadMusic()
+    {
+        main_music.setLoop(true);
+        digital_music.setLoop(true);
+
+        main_music.openFromFile("data/main.ogg");
+        digital_music.openFromFile("data/digital.ogg");
+
+        digital_music.setVolume(0);
+
+        main_music.play();
+        digital_music.play();
     }

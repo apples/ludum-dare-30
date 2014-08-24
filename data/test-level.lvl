@@ -7,13 +7,14 @@ stage main 13 7
     1 0 0 0 1 1 1 1 1 0 0 0 1
     1 0 0 0 1 0 0 0 1 0 0 0 1
     1 1 1 1 1 1 1 1 1 1 1 1 1
-stage digital 14 5
+stage digital 13 5
     1 1 1 1 1 1 1 1 1 1 1 1 1
     1 0 0 0 0 0 2 0 0 0 0 0 1
     1 0 0 1 0 0 1 0 0 0 0 0 1
-    1 0 0 0 0 1 1 1 0 0 0 0 1
+    1 0 0 0 0 1 1 1 0 0 0 2 1
     1 1 1 1 1 1 1 1 1 1 1 1 1
 link main 4 3 digital 1 1
 link main 5 5 digital 1 9
 switch digital 3 3 toggledoor digital 1 6
 switch main 5 7 toggledoor main 1 6
+switch main 4 11 toggledoor digital 3 11

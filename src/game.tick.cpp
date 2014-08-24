@@ -49,12 +49,16 @@ using namespace Component;
                         active_world = &main_world;
                         player = active_world->emplaceEntity(move(player_data));
                         player.get<Sprite>().data().reset("player", "idle");
+                        main_music.setVolume(100);
+                        digital_music.setVolume(0);
                     }
                     else
                     {
                         active_world = &digital_world;
                         player = active_world->emplaceEntity(move(player_data));
                         player.get<Sprite>().data().reset("avatar", "idle");
+                        main_music.setVolume(0);
+                        digital_music.setVolume(100);
                     }
                     pos.y = link.to_r*tileWidth+tileWidth/2;
                     pos.x = link.to_c*tileWidth+tileWidth/2;
@@ -107,7 +111,7 @@ using namespace Component;
                                         door.open = true;
                                         get<0>(ent).get<Sprite>().data().anim = "door-open";
                                         target_world->eraseComponent(get<0>(ent).get<Solid>().id());
-                                        get<0>(ent).get<Position>().data().z = -1;
+                                        get<0>(ent).get<Position>().data().z = -0.5;
                                     }
                                 }
                             }
