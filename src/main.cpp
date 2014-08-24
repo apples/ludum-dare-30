@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
     auto prof = profiler->scope("Main");
 
     std::ofstream logfile("log.txt");
-    logger = new Logger<>(logfile);
+    logger = new Logger<>(logfile, std::clog);
 
     Game::RenderParams renparams;
     renparams.fsaaSamples = 4;

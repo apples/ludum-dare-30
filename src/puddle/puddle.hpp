@@ -97,6 +97,7 @@ class Allocator<T, false>
 
             void deallocate(T* t)
             {
+                if (!t) return;
                 Element* curr = reinterpret_cast<Element*>(t);
                 curr->next = next;
                 next = curr;

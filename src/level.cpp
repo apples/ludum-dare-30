@@ -88,6 +88,23 @@ void Level::loadFile(std::string filename)
             stages.at(lnk2.to_name).links.push_back(lnk1); // Don't move!
             stages.at(lnk1.to_name).links.push_back(lnk2);
         }
+        else if (word == "switch")
+        {
+            Switch swtch;
+
+            std::string stgname;
+            std::string actname;
+
+            ss >> stgname >> swtch.r >> swtch.c >> actname;
+
+            if (actname == "toggledoor")
+            {
+                swtch.action = Switch::TOGGLEDOOR;
+                ss >> swtch.to_name >> swtch.to_r >> swtch.to_c;
+            }
+
+            stages.at(stgname).switches.push_back(move(swtch));
+        }
         else
         {
             throw runtime_error("Invalid level file!");

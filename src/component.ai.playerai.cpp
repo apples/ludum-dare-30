@@ -29,7 +29,12 @@ void PlayerAI::operator()(Game& game, EntID ent, AI const& ai)
         sprite.flipX = false;
     }
 
-    if (inputs[UP]() && !ai.senses.hitsBottom.empty()) vel.vy += 15;
+    if (inputs[UP]() && !ai.senses.hitsBottom.empty()) vel.vy += 11;
+
+    if (ai.senses.hitsBottom.empty() && !inputs[LEFT]() && !inputs[RIGHT]())
+    {
+        vel.vx *= 0.5;
+    }
 
     if (vel.vx != 0.0 && sprite.anim != "walk")
     {

@@ -9,6 +9,7 @@
 #include "component.position.hpp"
 #include "component.solid.hpp"
 #include "component.sprite.hpp"
+#include "component.tile.hpp"
 #include "component.velocity.hpp"
 
 #endif // COMPONENTS_HPP

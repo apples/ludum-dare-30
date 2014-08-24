@@ -25,6 +25,32 @@ player:
             - r: 1
               c: 0
               dur: 10
+avatar:
+    texture: avatar
+    width: 32
+    height: 32
+    anims:
+        idle:
+            - r: 0
+              c: 3
+              dur: 10
+        walk:
+            - r: 0
+              c: 0
+              dur: 10
+            - r: 0
+              c: 1
+              dur: 10
+            - r: 0
+              c: 2
+              dur: 10
+            - r: 0
+              c: 1
+              dur: 10
+        jump:
+            - r: 1
+              c: 0
+              dur: 10
 goomba:
     texture: enemies
     width: 32
@@ -37,20 +63,8 @@ goomba:
             - r: 0
               c: 4
               dur: 10
-link:
-    texture: tiles
-    width: 32
-    height: 32
-    anims:
-        terminal:
-            - r: 0
-              c: 3
-              dur: 10
-            - r: 0
-              c: 4
-              dur: 10
-tile:
-    texture: tiles
+tiles-main:
+    texture: tiles-real
     width: 32
     height: 32
     anims:
@@ -58,14 +72,58 @@ tile:
             - r: 1
               c: 0
               dur: 10
-        bricks:
+        wall:
             - r: 0
               c: 0
               dur: 10
-        firepot:
+        terminal:
             - r: 0
               c: 3
-              dur: 5
+              dur: 10
             - r: 0
               c: 4
-              dur: 5
+              dur: 10
+        switch:
+            - r: 1
+              c: 3
+              dur: 10
+        door-open:
+            - r: 0
+              c: 2
+              dur: 10
+        door-closed:
+            - r: 0
+              c: 7
+              dur: 10
+tiles-digital:
+    texture: tiles-digital
+    width: 32
+    height: 32
+    anims:
+        background:
+            - r: 1
+              c: 0
+              dur: 10
+        wall:
+            - r: 0
+              c: 0
+              dur: 10
+        terminal:
+            - r: 0
+              c: 3
+              dur: 10
+            - r: 0
+              c: 4
+              dur: 10
+        switch:
+            - r: 1
+              c: 3
+              dur: 10
+        door-open:
+            - r: 0
+              c: 2
+              dur: 10
+        door-closed:
+            - r: 0
+              c: 7
+              dur: 10

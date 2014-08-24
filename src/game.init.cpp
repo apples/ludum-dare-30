@@ -93,37 +93,62 @@ using namespace Component;
 
         auto load_world = [&](Stage& stg, ECDatabase& db)
         {
+            std::string tileset_name = "tiles-"+stg.name;
+
+            logger->log("Loading tiles for ", stg.name);
+
             for (int r=0; r<stg.getHeight(); ++r)
             {
                 for (int c=0; c<stg.getWidth(); ++c)
                 {
                     auto tile = db.makeEntity();
 
-                    auto& pos = db.makeComponent(tile, Position{}).data();
-                    pos.y = r*tileWidth+tileWidth/2;
-                    pos.x = c*tileWidth+tileWidth/2;
+                    auto pos = db.makeComponent(tile, Position{});
+                    pos.data().y = r*tileWidth+tileWidth/2;
+                    pos.data().x = c*tileWidth+tileWidth/2;
 
-                    auto& sprite = db.makeComponent(tile, Sprite{}).data();
-                    sprite.name = "tile";
+                    auto sprite = db.makeComponent(tile, Sprite{});
+                    sprite.data().name = tileset_name;
 
-                    if (stg[r][c] == 1)
+                    auto t = db.makeComponent(tile, Tile{});
+                    t.data().r = r;
+                    t.data().c = c;
+
+                    switch (stg[r][c])
                     {
-                        sprite.anim = "bricks";
+                        case 1:
+                        {
+                            sprite.data().anim = "wall";
+                            auto& solid = db.makeComponent(tile, Solid{}).data();
+                            solid.rect.left = -tileWidth/2;
+                            solid.rect.right = tileWidth/2;
+                            solid.rect.bottom = -tileWidth/2;
+                            solid.rect.top = tileWidth/2;
+                        } break;
 
-                        auto& solid = db.makeComponent(tile, Solid{}).data();
-                        solid.rect.left = -tileWidth/2;
-                        solid.rect.right = tileWidth/2;
-                        solid.rect.bottom = -tileWidth/2;
-                        solid.rect.top = tileWidth/2;
-                    }
-                    else
-                    {
-                        sprite.anim = "background";
+                        case 2:
+                        {
+                            sprite.data().anim = "door-closed";
+                            auto& solid = db.makeComponent(tile, Solid{}).data();
+                            solid.rect.left = -tileWidth/2;
+                            solid.rect.right = tileWidth/2;
+                            solid.rect.bottom = -tileWidth/2;
+                            solid.rect.top = tileWidth/2;
 
-                        pos.z = -1;
+                            auto& dor = db.makeComponent(tile, Door{}).data();
+                            dor.open = false;
+                        } break;
+
+                        default:
+                        {
+                            sprite.data().anim = "background";
+                            pos.data().z = -1;
+                        }
                     }
                 }
             }
+
+            logger->log("Loading links for ", stg.name);
 
             for (Link& l : stg.links)
             {
@@ -134,11 +159,30 @@ using namespace Component;
                 pos.x = l.c*tileWidth+tileWidth/2;
 
                 auto& sprite = db.makeComponent(ent, Sprite{}).data();
-                sprite.name = "link";
+                sprite.name = tileset_name;
                 sprite.anim = "terminal";
 
                 db.makeComponent(ent, l);
             }
+
+            logger->log("Loading switches for ", stg.name);
+
+            for (Switch& sw : stg.switches)
+            {
+                auto ent = db.makeEntity();
+
+                auto& pos = db.makeComponent(ent, Position{}).data();
+                pos.y = sw.r*tileWidth+tileWidth/2;
+                pos.x = sw.c*tileWidth+tileWidth/2;
+
+                auto& sprite = db.makeComponent(ent, Sprite{}).data();
+                sprite.name = tileset_name;
+                sprite.anim = "switch";
+
+                db.makeComponent(ent, sw);
+            }
+
+            logger->log("Done loading ", stg.name);
         };
 
         load_world(main_stage, main_world);

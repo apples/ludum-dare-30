@@ -15,6 +15,23 @@ struct Link
     std::string to_name;
 };
 
+struct Switch
+{
+    enum Action
+    {
+        TOGGLEDOOR
+    };
+
+    Action action;
+    int action_data;
+    std::string to_name;
+    int to_r;
+    int to_c;
+
+    int r;
+    int c;
+};
+
 class Stage
 {
     using Tile = int;
@@ -28,6 +45,7 @@ public:
 
     std::string name;
     std::vector<Link> links;
+    std::vector<Switch> switches;
 
     void resize(int w, int h);
     Row operator[](std::vector<Tile>::size_type r);

@@ -1,8 +1,10 @@
 ---
 enemies:
     file: enemies.png
-tiles:
-    file: tiles.png
+tiles-real:
+    file: tiles-real.png
+tiles-digital:
+    file: tiles-digital.png
 font:
     file: font.png
 player:

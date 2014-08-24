@@ -32,7 +32,7 @@ using namespace Component;
             return;
         }
 
-        if (Z.pressed())
+        if (Z.pressed()) [&]
         {
             auto& pos = player.get<Position>().data();
             int r = (pos.y)/tileWidth;
@@ -47,21 +47,75 @@ using namespace Component;
                     if (link.to_name == "main")
                     {
                         active_world = &main_world;
+                        player = active_world->emplaceEntity(move(player_data));
+                        player.get<Sprite>().data().reset("player", "idle");
                     }
                     else
                     {
                         active_world = &digital_world;
+                        player = active_world->emplaceEntity(move(player_data));
+                        player.get<Sprite>().data().reset("avatar", "idle");
                     }
-                    player = active_world->emplaceEntity(move(player_data));
                     pos.y = link.to_r*tileWidth+tileWidth/2;
                     pos.x = link.to_c*tileWidth+tileWidth/2;
 
                     smoothcam.snapto(pos.x, pos.y, 0, 0);
 
-                    break;
+                    return;
                 }
             }
-        }
+
+            for (auto&& ent : active_world->query<Switch,Position>())
+            {
+                Switch& sw = get<1>(ent).data();
+                if (sw.r == r && sw.c == c)
+                {
+                    logger->log("SWITCH HIT");
+                    ECDatabase* target_world;
+                    if (sw.to_name == "main")
+                    {
+                        target_world = &main_world;
+                    }
+                    else
+                    {
+                        target_world = &digital_world;
+                    }
+
+                    switch (sw.action)
+                    {
+                        case Switch::TOGGLEDOOR:
+                        {
+                            for (auto&& ent : target_world->query<Door,Tile>())
+                            {
+                                auto& door = get<1>(ent).data();
+                                auto& tile = get<2>(ent).data();
+                                if (tile.r == sw.to_r && tile.c == sw.to_c)
+                                {
+                                    if (door.open)
+                                    {
+                                        door.open = false;
+                                        get<0>(ent).get<Sprite>().data().anim = "door-closed";
+                                        auto& solid = target_world->makeComponent(get<0>(ent), Solid{}).data();
+                                        solid.rect.left = -tileWidth/2;
+                                        solid.rect.right = tileWidth/2;
+                                        solid.rect.bottom = -tileWidth/2;
+                                        solid.rect.top = tileWidth/2;
+                                        get<0>(ent).get<Position>().data().z = 0;
+                                    }
+                                    else
+                                    {
+                                        door.open = true;
+                                        get<0>(ent).get<Sprite>().data().anim = "door-open";
+                                        target_world->eraseComponent(get<0>(ent).get<Solid>().id());
+                                        get<0>(ent).get<Position>().data().z = -1;
+                                    }
+                                }
+                            }
+                        } break;
+                    }
+                }
+            }
+        }();
 
         for (auto&& ent : active_world->query<AI>())
         {
