@@ -1,36 +1,53 @@
 ---
 player:
-    texture: enemies
+    texture: player
     width: 32
     height: 32
     anims:
         idle:
-            - r: 2
+            - r: 0
+              c: 3
+              dur: 10
+        walk:
+            - r: 0
               c: 0
               dur: 10
-            - r: 2
+            - r: 0
               c: 1
+              dur: 10
+            - r: 0
+              c: 2
+              dur: 10
+            - r: 0
+              c: 1
+              dur: 10
+        jump:
+            - r: 1
+              c: 0
               dur: 10
 goomba:
     texture: enemies
     width: 32
     height: 32
     anims:
-        idle:
+        terminal:
             - r: 0
-              c: 0
+              c: 3
               dur: 10
             - r: 0
-              c: 1
+              c: 4
               dur: 10
-ball:
-    texture: enemies
+link:
+    texture: tiles
     width: 32
     height: 32
     anims:
-        ball:
-            - r: 3
+        terminal:
+            - r: 0
               c: 3
+              dur: 10
+            - r: 0
+              c: 4
               dur: 10
 tile:
     texture: tiles
@@ -52,12 +69,3 @@ tile:
             - r: 0
               c: 4
               dur: 5
-redx:
-    texture: enemies
-    width: 8
-    height: 8
-    anims:
-        redx:
-            - r: 7
-              c: 7
-              dur: 10

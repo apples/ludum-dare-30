@@ -22,6 +22,10 @@ public:
     void push(double x, double y, double w, double h);
 
     State get() const;
+
+    void reset();
+    void snapto(double x, double y, double w, double h);
+    
 };
 
 #endif // SMOOTHCAMERA_HPP

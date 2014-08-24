@@ -1,5 +1,7 @@
 #include "smoothcamera.hpp"
 
+#include <algorithm>
+
 SmoothCamera::SmoothCamera(int sz)
     : history(sz)
 {}
@@ -33,4 +35,20 @@ SmoothCamera::State SmoothCamera::get() const
     avg.h /= history.size();
 
     return avg;
+}
+
+void SmoothCamera::reset()
+{
+    std::fill(begin(history), end(history), State{});
+}
+
+void SmoothCamera::snapto(double x, double y, double w, double h)
+{
+    State st;
+    st.x = x;
+    st.y = y;
+    st.w = w;
+    st.h = h;
+
+    std::fill(begin(history), end(history), st);
 }

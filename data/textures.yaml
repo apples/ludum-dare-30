@@ -5,3 +5,7 @@ tiles:
     file: tiles.png
 font:
     file: font.png
+player:
+    file: player.png
+avatar:
+    file: avatar.png

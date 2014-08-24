@@ -30,6 +30,8 @@ class Game
             double height;
         } min_view;
 
+		int pixel_scale = 2;
+
         SmoothCamera smoothcam;
 
     // Resources

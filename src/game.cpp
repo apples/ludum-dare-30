@@ -36,8 +36,8 @@ using namespace Component;
         addCallback([&]{ tick(); draw(); }, 60.0);
         setWindowTitle("Ludum Dare 30", true);
 
-        min_view.width = (params.width);
-        min_view.height = (params.height);
+        min_view.width = (params.width/pixel_scale);
+        min_view.height = (params.height/pixel_scale);
 
         smoothcam = SmoothCamera(10);
 
@@ -67,10 +67,10 @@ using namespace Component;
                 auto& vel = db.makeComponent(ent, Velocity{}).data();
 
                 auto& solid = db.makeComponent(ent, Solid{}).data();
-                solid.rect.left = -14;
-                solid.rect.right = solid.rect.left + 28;
+                solid.rect.left = -8;
+                solid.rect.right = solid.rect.left + 16;
                 solid.rect.bottom = -16;
-                solid.rect.top = solid.rect.bottom + 28;
+                solid.rect.top = solid.rect.bottom + 31;
 
                 PlayerAI ai;
                 ai.setInput(PlayerAI::LEFT,  iface->key(Interface::ivkArrow('L')));
@@ -127,6 +127,21 @@ using namespace Component;
                         pos.z = -1;
                     }
                 }
+            }
+
+            for (Link& l : stg.links)
+            {
+                auto ent = db.makeEntity();
+
+                auto& pos = db.makeComponent(ent, Position{}).data();
+                pos.y = l.r*tileWidth+tileWidth/2;
+                pos.x = l.c*tileWidth+tileWidth/2;
+
+                auto& sprite = db.makeComponent(ent, Sprite{}).data();
+                sprite.name = "link";
+                sprite.anim = "terminal";
+
+                db.makeComponent(ent, l);
             }
         };
 
@@ -219,17 +234,32 @@ using namespace Component;
 
         if (Z.pressed())
         {
-            if (active_world == &main_world)
+            auto& pos = player.get<Position>().data();
+            int r = (pos.y)/tileWidth;
+            int c = (pos.x)/tileWidth;
+
+            for (auto&& ent : active_world->query<Link,Position>())
             {
-                auto player_data = active_world->displaceEntity(player);
-                active_world = &digital_world;
-                player = active_world->emplaceEntity(move(player_data));
-            }
-            else
-            {
-                auto player_data = active_world->displaceEntity(player);
-                active_world = &main_world;
-                player = active_world->emplaceEntity(move(player_data));
+                Link& link = get<1>(ent).data();
+                if (link.r == r && link.c == c)
+                {
+                    auto player_data = active_world->displaceEntity(player);
+                    if (link.to_name == "main")
+                    {
+                        active_world = &main_world;
+                    }
+                    else
+                    {
+                        active_world = &digital_world;
+                    }
+                    player = active_world->emplaceEntity(move(player_data));
+                    pos.y = link.to_r*tileWidth+tileWidth/2;
+                    pos.x = link.to_c*tileWidth+tileWidth/2;
+
+                    smoothcam.snapto(pos.x, pos.y, 0, 0);
+
+                    break;
+                }
             }
         }
 
@@ -510,8 +540,8 @@ using namespace Component;
 
             smoothcam.push(camloc.cx, camloc.cy, camloc.w, camloc.h);
             auto scam = smoothcam.get();
-            scam.x = int(scam.x*8.0)/8.0;
-            scam.y = int(scam.y*8.0)/8.0;
+            scam.x = int(scam.x*pixel_scale)/double(pixel_scale);
+            scam.y = int(scam.y*pixel_scale)/double(pixel_scale);
 
             double hw = scam.w/2.0;
             double hh = scam.h/2.0;
@@ -575,6 +605,7 @@ using namespace Component;
                     auto const& anim = sprdata.anims.get(spr.anim);
 
                     mat.translate(int(pos.x+spr.offset.x), int(pos.y+spr.offset.y), pos.z);
+                    if (spr.flipX) mat.scale(-1.0, 1.0);
                     modelMatrix(mat);
 
                     if (--spr.ticker <= 0)

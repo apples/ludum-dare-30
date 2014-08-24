@@ -77,7 +77,7 @@ void Level::loadFile(std::string filename)
             Link lnk1;
             Link lnk2;
 
-            ss >> lnk2.to_name >> lnk1.c >> lnk1.r >> lnk1.to_name >> lnk1.to_c >> lnk1.to_r;
+            ss >> lnk2.to_name >> lnk1.r >> lnk1.c >> lnk1.to_name >> lnk1.to_r >> lnk1.to_c;
             lnk2.r = lnk1.to_r;
             lnk2.c = lnk1.to_c;
             lnk2.to_r = lnk1.r;
