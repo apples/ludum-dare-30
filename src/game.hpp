@@ -45,7 +45,11 @@ public:
 
     // Entities
 
-        ECDatabase entities;
+        ECDatabase main_world;
+        ECDatabase digital_world;
+
+		ECDatabase* active_world;
+		EntID player;
 
     // Initialization
 

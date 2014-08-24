@@ -2,21 +2,47 @@
 #define LEVEL_HPP
 
 #include <array>
+#include <string>
+#include <unordered_map>
 #include <vector>
+
+struct Link
+{
+    int r;
+    int c;
+    int to_r;
+    int to_c;
+    std::string to_name;
+};
+
+class Stage
+{
+    using Tile = int;
+    using Row = int*;
+
+    std::vector<Tile> data;
+    int width = 0;
+    int height = 0;
+
+public:
+
+    std::string name;
+    std::vector<Link> links;
+
+    void resize(int w, int h);
+    Row operator[](std::vector<Tile>::size_type r);
+
+    int getHeight() const;
+    int getWidth() const;
+};
 
 class Level
 {
-    using Tile = int;
-    using Layer = std::vector<Tile>;
-    std::array<Layer,4> data;
-
 public:
-    int width;
-    int height;
+    std::string name;
+    std::unordered_map<std::string, Stage> stages;
 
-    Level();
-
-    Tile& at(int l, int r, int c);
+    void loadFile(std::string filename);
 };
 
 #endif // LEVEL_HPP

@@ -721,7 +721,7 @@ class Database
          */
         Entity displaceEntity(EntID eid)
         {
-            Entity rv = move(*eid.iter);
+            Entity rv = move(*make_mutable_iterator(entities, eid.iter));
             entities.erase(eid.iter);
             return rv;
         }

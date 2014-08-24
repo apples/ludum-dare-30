@@ -34,7 +34,7 @@ using namespace Component;
     // Configuration
 
         addCallback([&]{ tick(); draw(); }, 60.0);
-        setWindowTitle("Escape", true);
+        setWindowTitle("Ludum Dare 30", true);
 
         min_view.width = (params.width);
         min_view.height = (params.height);
@@ -48,22 +48,25 @@ using namespace Component;
 
     // Entities
 
+        active_world = &main_world;
+
         // Player
 
+            auto make_player = [&](ECDatabase& db)
             {
-                auto ent = entities.makeEntity();
+                auto ent = db.makeEntity();
 
-                auto& sprite = entities.makeComponent(ent, Sprite{}).data();
+                auto& sprite = db.makeComponent(ent, Sprite{}).data();
                 sprite.name = "player";
                 sprite.anim = "idle";
 
-                auto& pos = entities.makeComponent(ent, Position{}).data();
+                auto& pos = db.makeComponent(ent, Position{}).data();
                 pos.x = 64;
                 pos.y = 64;
 
-                auto& vel = entities.makeComponent(ent, Velocity{}).data();
+                auto& vel = db.makeComponent(ent, Velocity{}).data();
 
-                auto& solid = entities.makeComponent(ent, Solid{}).data();
+                auto& solid = db.makeComponent(ent, Solid{}).data();
                 solid.rect.left = -14;
                 solid.rect.right = solid.rect.left + 28;
                 solid.rect.bottom = -16;
@@ -74,111 +77,61 @@ using namespace Component;
                 ai.setInput(PlayerAI::RIGHT, iface->key(Interface::ivkArrow('R')));
                 ai.setInput(PlayerAI::DOWN,  iface->key(Interface::ivkArrow('D')));
                 ai.setInput(PlayerAI::UP,    iface->key(Interface::ivkArrow('U')));
-                auto& aic = entities.makeComponent(ent, AI{move(ai)}).data();
+                auto& aic = db.makeComponent(ent, AI{move(ai)}).data();
 
-                auto& cam = entities.makeComponent(ent, CamLook{}).data();
+                auto& cam = db.makeComponent(ent, CamLook{}).data();
                 cam.aabb = solid.rect;
-            }
 
-        // Fire Pots
+                return ent;
+            };
 
-            for (int i=0; i<500; ++i)
-            {
-                auto ent = entities.makeEntity();
-
-                auto& sprite = entities.makeComponent(ent, Sprite{}).data();
-                sprite.name = "tile";
-                sprite.anim = "firepot";
-
-                auto& pos = entities.makeComponent(ent, Position{}).data();
-                pos.x = (rng()%149+1)*16;
-                pos.y = (rng()%149+1)*16;
-                pos.z = -0.5;
-            }
-
-        // Goombas
-
-            for (int i=0; i<50; ++i)
-            {
-                auto ent = entities.makeEntity();
-
-                auto& sprite = entities.makeComponent(ent, Sprite{}).data();
-                sprite.name = "goomba";
-                sprite.anim = "idle";
-
-                auto& pos = entities.makeComponent(ent, Position{}).data();
-                pos.x = (rng()%149+1)*16;
-                pos.y = (rng()%149+1)*16;
-
-                auto& vel = entities.makeComponent(ent, Velocity{}).data();
-
-                auto& solid = entities.makeComponent(ent, Solid{}).data();
-                solid.rect.left = -14;
-                solid.rect.right = solid.rect.left + 28;
-                solid.rect.bottom = -16;
-                solid.rect.top = solid.rect.bottom + 28;
-
-                auto& ai = entities.makeComponent(ent, AI{GoombaAI{}}).data();
-            }
-
-        // Balls
-
-            for (int i=0; i<50; ++i)
-            {
-                auto ent = entities.makeEntity();
-
-                auto& sprite = entities.makeComponent(ent, Sprite{}).data();
-                sprite.name = "ball";
-                sprite.anim = "ball";
-
-                auto& pos = entities.makeComponent(ent, Position{}).data();
-                pos.x = (rng()%149+1)*16;
-                pos.y = (rng()%149+1)*16;
-
-                auto& vel = entities.makeComponent(ent, Velocity{}).data();
-
-                auto& solid = entities.makeComponent(ent, Solid{}).data();
-                solid.rect.left = -14;
-                solid.rect.right = solid.rect.left + 28;
-                solid.rect.bottom = -16;
-                solid.rect.top = solid.rect.bottom + 28;
-            }
+            player = make_player(main_world);
 
     // Load Level
 
         Level lvl;
+        lvl.loadFile("data/test-level.lvl");
 
-        for (int i=0; i<lvl.height; ++i)
+        Stage& main_stage = lvl.stages.at("main");
+        Stage& digital_stage = lvl.stages.at("digital");
+
+        auto load_world = [&](Stage& stg, ECDatabase& db)
         {
-            for (int j=0; j<lvl.width; ++j)
+            for (int r=0; r<stg.getHeight(); ++r)
             {
-                auto tile = entities.makeEntity();
-
-                auto& pos = entities.makeComponent(tile, Position{}).data();
-                pos.y = i*tileWidth+tileWidth/2;
-                pos.x = j*tileWidth+tileWidth/2;
-
-                auto& sprite = entities.makeComponent(tile, Sprite{}).data();
-                sprite.name = "tile";
-
-                if (lvl.at(0,i,j) == 1)
+                for (int c=0; c<stg.getWidth(); ++c)
                 {
-                    sprite.anim = "bricks";
+                    auto tile = db.makeEntity();
 
-                    auto& solid = entities.makeComponent(tile, Solid{}).data();
-                    solid.rect.left = -tileWidth/2;
-                    solid.rect.right = tileWidth/2;
-                    solid.rect.bottom = -tileWidth/2;
-                    solid.rect.top = tileWidth/2;
-                }
-                else
-                {
-                    sprite.anim = "background";
+                    auto& pos = db.makeComponent(tile, Position{}).data();
+                    pos.y = r*tileWidth+tileWidth/2;
+                    pos.x = c*tileWidth+tileWidth/2;
 
-                    pos.z = -1;
+                    auto& sprite = db.makeComponent(tile, Sprite{}).data();
+                    sprite.name = "tile";
+
+                    if (stg[r][c] == 1)
+                    {
+                        sprite.anim = "bricks";
+
+                        auto& solid = db.makeComponent(tile, Solid{}).data();
+                        solid.rect.left = -tileWidth/2;
+                        solid.rect.right = tileWidth/2;
+                        solid.rect.bottom = -tileWidth/2;
+                        solid.rect.top = tileWidth/2;
+                    }
+                    else
+                    {
+                        sprite.anim = "background";
+
+                        pos.z = -1;
+                    }
                 }
             }
-        }
+        };
+
+        load_world(main_stage, main_world);
+        load_world(digital_stage, digital_world);
     }
 
 // Resource and Configuration Functions
@@ -256,6 +209,7 @@ using namespace Component;
         iface->poll();
 
         auto ESC = iface->key(Interface::ivkFunc(0));
+        auto Z = iface->key(Interface::ivk('Z'));
 
         if (ESC || shouldClose())
         {
@@ -263,7 +217,23 @@ using namespace Component;
             return;
         }
 
-        for (auto&& ent : entities.query<AI>())
+        if (Z.pressed())
+        {
+            if (active_world == &main_world)
+            {
+                auto player_data = active_world->displaceEntity(player);
+                active_world = &digital_world;
+                player = active_world->emplaceEntity(move(player_data));
+            }
+            else
+            {
+                auto player_data = active_world->displaceEntity(player);
+                active_world = &main_world;
+                player = active_world->emplaceEntity(move(player_data));
+            }
+        }
+
+        for (auto&& ent : active_world->query<AI>())
         {
             auto& ai = get<1>(ent).data();
             ai.clearSenses();
@@ -278,7 +248,7 @@ using namespace Component;
     {
         auto _ = profiler->scope("Game::procAIs()");
 
-        for (auto&& ent : entities.query<AI>())
+        for (auto&& ent : active_world->query<AI>())
         {
             auto& e = get<0>(ent);
             auto& ai = get<1>(ent).data();
@@ -292,9 +262,9 @@ using namespace Component;
 
         auto _ = profiler->scope("Game::runPhysics()");
 
-        auto const& ent_pos_vel_sol = entities.query<Position,Velocity,Solid>();
-        auto const& ent_vel_sol = entities.query<Velocity,Solid>();
-        auto const& ent_pos_sol = entities.query<Position,Solid>();
+        auto const& ent_pos_vel_sol = active_world->query<Position,Velocity,Solid>();
+        auto const& ent_vel_sol = active_world->query<Velocity,Solid>();
+        auto const& ent_pos_sol = active_world->query<Position,Solid>();
 
         auto getRect = [](Position const& pos, Solid const& solid)
         {
@@ -451,10 +421,10 @@ using namespace Component;
     {
         auto _ = profiler->scope("Game::slaughter()");
 
-        auto const& ents = entities.query<KillMe>();
+        auto const& ents = active_world->query<KillMe>();
 
         for (auto& ent : ents)
-            entities.eraseEntity(get<0>(ent));
+            main_world.eraseEntity(get<0>(ent));
     }
 
 // Draw Functions
@@ -488,7 +458,7 @@ using namespace Component;
             view.right = numeric_limits<decltype(view.right)>::lowest();
             view.top = view.right;
 
-            for (auto& ent : entities.query<Position, CamLook>())
+            for (auto& ent : active_world->query<Position, CamLook>())
             {
                 auto& pos = get<1>(ent).data();
                 auto& cam = get<2>(ent).data();
@@ -564,7 +534,7 @@ using namespace Component;
 
         Transform mat;
 
-        auto const& ents = entities.query<Position, Sprite>();
+        auto const& ents = active_world->query<Position, Sprite>();
         using Ent = decltype(&ents[0]);
 
         struct DrawItem
@@ -633,7 +603,7 @@ using namespace Component;
             item.draw();
 
         #if 0
-        for (auto& ent : entities.getEntities<Position, Solid>())
+        for (auto& ent : main_world.getEntities<Position, Solid>())
         {
             auto _ = mat.scope_push();
 
