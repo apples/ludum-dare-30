@@ -69,31 +69,28 @@ tiles-main:
     height: 32
     anims:
         background:
-            - r: 1
+            - r: 0
               c: 0
               dur: 10
         wall:
             - r: 0
-              c: 0
+              c: 1
               dur: 10
         terminal:
-            - r: 0
-              c: 3
-              dur: 10
-            - r: 0
-              c: 4
-              dur: 10
-        switch:
             - r: 1
               c: 3
               dur: 10
+        switch:
+            - r: 1
+              c: 0
+              dur: 10
         door-open:
             - r: 0
-              c: 2
+              c: 3
               dur: 10
         door-closed:
             - r: 0
-              c: 7
+              c: 2
               dur: 10
 tiles-digital:
     texture: tiles-digital
